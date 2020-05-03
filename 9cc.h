@@ -65,3 +65,4 @@ Node *relational();
 Node *equality();
 Node *expr();
 void gen(Node *node);
+void codegen(Node *node);
