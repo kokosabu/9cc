@@ -19,6 +19,18 @@ bool consume(char *op)
     return true;
 }
 
+// 次のトークンが期待している識別子のときには、トークンを1つ読み進めて
+// 真を返す。それ以外の場合には偽を返す。
+bool consume_ident(char *ident)
+{
+    if(token->kind != TK_IDENT) {
+        return false;
+    }
+    *ident = token->str[0];
+    token = token->next;
+    return true;
+}
+
 // 次のトークンが期待している記号のときには、トークンを1つ読み進める。
 // それ以外の場合にはエラーを報告する。
 void expect(char *op)
@@ -87,8 +99,14 @@ Token *tokenize(char *p)
             continue;
         }
 
-        if(strchr("+-*/()", *p)) {
+        if(strchr("+-*/();=", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
+            continue;
+        }
+
+        //if(strchr("abcdefghijklmnopqrstuvwxyz", *p)) {
+        if('a' <= *p && *p <= 'z') {
+            cur = new_token(TK_IDENT, cur, p++, 1);
             continue;
         }
 
@@ -124,6 +142,15 @@ Node *new_node_num(int val)
     return node;
 }
 
+Node *new_node_ident(char ident)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    node->offset = (ident - 'a' + 1) * 8;
+    return node;
+}
+
+// primary = num | ident | "(" expr ")"
 Node *primary()
 {
     // 次のトークンが"("なら、"(" expr ")"のはず
@@ -133,10 +160,16 @@ Node *primary()
         return node;
     }
 
+    char ident;
+    if(consume_ident(&ident)) {
+        return new_node_ident(ident);
+    }
+
     // そうでなければ数値のはず
     return new_node_num(expect_number());
 }
 
+// unary = ("+" | "-")? primary
 Node *unary()
 {
     if(consume("+")) {
@@ -147,7 +180,7 @@ Node *unary()
     return primary();
 }
 
-
+// mul = unary ("*" unary | "/" unary)*
 Node *mul()
 {
     Node *node = unary();
@@ -163,6 +196,7 @@ Node *mul()
     }
 }
 
+// add = mul ("+" mul | "-" mul)*
 Node *add()
 {
     Node *node = mul();
@@ -178,6 +212,7 @@ Node *add()
     }
 }
 
+// relational = add ("<" add | "<=" add | ">" add | ">=" add)*
 Node *relational()
 {
     Node *node = add();
@@ -197,6 +232,7 @@ Node *relational()
     }
 }
 
+// equality = relational ("==" relational | "!=" relational)*
 Node *equality()
 {
     Node *node = relational();
@@ -212,9 +248,41 @@ Node *equality()
     }
 }
 
-Node *expr()
+// assign = equality ("=" assign)?
+Node *assign()
 {
     Node *node = equality();
 
+    if(consume("=")) {
+        node = new_node(ND_ASSIGN, node, assign());
+    }
     return node;
+}
+
+// expr = assign
+Node *expr()
+{
+    Node *node = assign();
+
+    return node;
+}
+
+// stmt = expr ";"
+Node *stmt()
+{
+    Node *node = expr();
+    expect(";");
+    return node;
+}
+
+Node *code[100];
+
+// program = stmt*
+Node *program()
+{
+    int i = 0;
+    while(!at_eof()) {
+        code[i++] = stmt();
+    }
+    code[i] = NULL;
 }

@@ -1,9 +1,9 @@
 CFLAGS=-std=c11 -g -static
-SRCS=$(wildcard *c)
+SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
 9cc: $(OBJS)
-	$(CC) -o 9cc $(OBJS) $(LDFLAGS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
 $(OBJS): 9cc.h
 
