@@ -19,6 +19,17 @@ bool consume(char *op)
     return true;
 }
 
+// 次のトークンが期待しているトークンのときには、トークンを1つ読み進めて
+// 真を返す。それ以外の場合には偽を返す。
+bool consume_kind(TokenKind kind)
+{
+    if(token->kind != kind) {
+        return false;
+    }
+    token = token->next;
+    return true;
+}
+
 // 次のトークンが期待している識別子のときには、トークンを1つ読み進めて
 // トークンを返す。それ以外の場合にはNULLを返す。
 Token *consume_ident()
@@ -112,6 +123,12 @@ Token *tokenize(char *p)
 
         if(strchr("+-*/();=", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
+            continue;
+        }
+
+        if(strncmp(p, "return", 6) == 0 && !(isalnum(p[6]) || p[6] == '_')) {
+            cur = new_token(TK_RETURN, cur, p, 6);
+            p += 6;
             continue;
         }
 
@@ -302,10 +319,19 @@ Node *expr()
     return node;
 }
 
-// stmt = expr ";"
+// stmt =  expr ";"
+//       | "return" expr ";"
 Node *stmt()
 {
-    Node *node = expr();
+    Node *node;
+
+    if(consume_kind(TK_RETURN)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_RETURN;
+        node->lhs = expr();
+    } else {
+        node = expr();
+    }
     expect(";");
     return node;
 }

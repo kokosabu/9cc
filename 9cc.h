@@ -13,6 +13,7 @@ struct LVar {
 // トークンの種類
 typedef enum {
     TK_RESERVED, // 記号
+    TK_RETURN,   // return
     TK_IDENT,    // 識別子
     TK_NUM,      // 整数トークン
     TK_EOF,      // 入力の終わりを表すトークン
@@ -40,6 +41,7 @@ typedef enum {
     ND_EQ,  // ==
     ND_NE,  // !=
     ND_ASSIGN, // =
+    ND_RETURN, // return
     ND_LVAR, // ローカル変数
     ND_NUM, // 整数
 } NodeKind;
@@ -71,6 +73,7 @@ extern Node* code[];
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
+bool consume_kind(TokenKind kind);
 Token *consume_ident();
 void expect(char *op);
 int expect_number();
