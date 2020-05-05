@@ -1,4 +1,15 @@
 /* 型の定義 */
+
+typedef struct LVar LVar;
+
+// ローカル変数の型
+struct LVar {
+    LVar *next; // 次の変数かNULL
+    char *name; // 変数の名前
+    int len;    // 名前の長さ
+    int offset; // RBPからのオフセット
+};
+
 // トークンの種類
 typedef enum {
     TK_RESERVED, // 記号
@@ -48,6 +59,9 @@ struct Node {
 // 現在着目しているトークン
 extern Token *token;
 
+// ローカル変数
+LVar *locals;
+
 // 入力プログラム
 extern char *user_input;
 
@@ -57,15 +71,16 @@ extern Node* code[];
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
-bool consume_ident(char *ident);
+Token *consume_ident();
 void expect(char *op);
 int expect_number();
 bool at_eof();
+LVar *find_lvar(Token *tok);
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 Token *tokenize(char *p);
 Node *new_node(NodeKind kind, Node*lhs, Node*rhs);
 Node *new_node_num(int val);
-Node *new_node_ident(char ident);
+Node *new_node_ident(Token *tok);
 Node *primary();
 Node *unary();
 Node *mul();

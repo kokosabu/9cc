@@ -41,6 +41,10 @@ assert 1 '(3+5)/2 > 3;'
 assert 0 '(3+5)/2 > 4;'
 assert 3 "a=3;"
 assert 6 "a=3+3;"
+assert 4 "a=4; a;"
+assert 4 "foo=4; foo;"
+assert 7 "foo=4; bar=3; foo+bar;"
+assert 7 "foo=4; fox=3; foo+fox;"
 
 #assert 0 '0==1'
 #assert 1 '42==42'

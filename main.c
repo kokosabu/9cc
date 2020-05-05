@@ -22,6 +22,11 @@ int main(int argc, char **argv)
     // トークナイズしてパースする
     user_input = argv[1];
     token = tokenize(user_input);
+    locals = calloc(1, sizeof(LVar));
+    locals->next = NULL;
+    locals->name = "*";
+    locals->len = 1;
+    locals->offset = 0;
     program();
 
     codegen();
