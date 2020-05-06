@@ -146,6 +146,11 @@ Token *tokenize(char *p)
             p += 5;
             continue;
         }
+        if(strncmp(p, "for", 3) == 0 && !(isalnum(p[3]) || p[3] == '_')) {
+            cur = new_token(TK_FOR, cur, p, 3);
+            p += 3;
+            continue;
+        }
 
         //if(strchr("abcdefghijklmnopqrstuvwxyz", *p)) {
         //if('a' <= *p && *p <= 'z') {
@@ -338,6 +343,7 @@ Node *expr()
 //       | "return" expr ";"
 //       | "if" "(" expr ")" stmt ("else" stmt)?
 //       | "while" "(" expr ")" stmt
+//       | "for" "(" expr? ";" expr? ";" expr? ")" stmt
 Node *stmt()
 {
     Node *node;
@@ -368,6 +374,34 @@ Node *stmt()
         node->lhs = expr();
         expect(")");
         node->rhs = stmt();
+    } else if(consume_kind(TK_FOR)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_FOR;
+        expect("(");
+        bool clause1 = consume(";");
+        if(clause1) {
+            node->lhs = NULL;
+        } else {
+            node->lhs = expr();
+            expect(";");
+        }
+        bool expression2 = consume(";");
+        node->rhs = calloc(1, sizeof(Node));
+        if(expression2) {
+            node->rhs->lhs = NULL;
+        } else {
+            node->rhs->lhs = expr();
+            expect(";");
+        }
+        bool expression3 = consume(")");
+        node->rhs->rhs = calloc(1, sizeof(Node));
+        if(expression3) {
+            node->rhs->rhs->lhs = NULL;
+        } else {
+            node->rhs->rhs->lhs = expr();
+            expect(")");
+        }
+        node->rhs->rhs->rhs = stmt();
     } else {
         node = expr();
 
