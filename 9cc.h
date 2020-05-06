@@ -14,6 +14,8 @@ struct LVar {
 typedef enum {
     TK_RESERVED, // 記号
     TK_RETURN,   // return
+    TK_IF,       // if
+    TK_ELSE,     // else
     TK_IDENT,    // 識別子
     TK_NUM,      // 整数トークン
     TK_EOF,      // 入力の終わりを表すトークン
@@ -32,18 +34,20 @@ struct Token {
 
 // 抽象構文木のノードの種類
 typedef enum {
-    ND_ADD, // +
-    ND_SUB, // -
-    ND_MUL, // *
-    ND_DIV, // /
-    ND_LT,  // <
-    ND_LE,  // <=
-    ND_EQ,  // ==
-    ND_NE,  // !=
+    ND_ADD,    // +
+    ND_SUB,    // -
+    ND_MUL,    // *
+    ND_DIV,    // /
+    ND_LT,     // <
+    ND_LE,     // <=
+    ND_EQ,     // ==
+    ND_NE,     // !=
     ND_ASSIGN, // =
     ND_RETURN, // return
-    ND_LVAR, // ローカル変数
-    ND_NUM, // 整数
+    ND_IF,     // if ( lhs = expr , rhs = then )
+    ND_THEN,   // then ( lhs = true's stmt, rhs = false's stmt )
+    ND_LVAR,   // ローカル変数
+    ND_NUM,    // 整数
 } NodeKind;
 
 typedef struct Node Node;
@@ -68,6 +72,8 @@ LVar *locals;
 extern char *user_input;
 
 extern Node* code[];
+
+extern int labelnum;
 
 /* プロトタイプ宣言 */
 void error(char *fmt, ...);

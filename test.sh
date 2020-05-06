@@ -48,6 +48,11 @@ assert 7 "foo=4; fox=3; foo+fox;"
 assert 7 "return 7; return 5;"
 assert 3 "foo=3; return foo;"
 assert 4 "return (3+5)/2;"
+assert 3 "ifa=1;if(ifa==1) return 3;"
+assert 3 "elsea=1;if (elsea==1) return 3; else return 5;"
+assert 5 "elsea=0;if(elsea==1 ) return 3; else return 5;"
+assert 2 "a=2; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
+assert 3 "a=3; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
 
 #assert 0 '0==1'
 #assert 1 '42==42'

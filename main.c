@@ -22,11 +22,17 @@ int main(int argc, char **argv)
     // トークナイズしてパースする
     user_input = argv[1];
     token = tokenize(user_input);
+
+    // ラベルの通し番号
+    labelnum = 0;
+
+    // ローカル変数の起点作成
     locals = calloc(1, sizeof(LVar));
     locals->next = NULL;
     locals->name = "*";
     locals->len = 1;
     locals->offset = 0;
+
     program();
 
     codegen();

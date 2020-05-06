@@ -131,6 +131,16 @@ Token *tokenize(char *p)
             p += 6;
             continue;
         }
+        if(strncmp(p, "if", 2) == 0 && !(isalnum(p[2]) || p[2] == '_')) {
+            cur = new_token(TK_IF, cur, p, 2);
+            p += 2;
+            continue;
+        }
+        if(strncmp(p, "else", 4) == 0 && !(isalnum(p[4]) || p[4] == '_')) {
+            cur = new_token(TK_ELSE, cur, p, 4);
+            p += 4;
+            continue;
+        }
 
         //if(strchr("abcdefghijklmnopqrstuvwxyz", *p)) {
         //if('a' <= *p && *p <= 'z') {
@@ -321,6 +331,7 @@ Node *expr()
 
 // stmt =  expr ";"
 //       | "return" expr ";"
+//       | "if" "(" expr ")" stmt ("else" stmt)?
 Node *stmt()
 {
     Node *node;
@@ -329,10 +340,26 @@ Node *stmt()
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
         node->lhs = expr();
+
+        expect(";");
+    } else if(consume_kind(TK_IF)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_IF;
+        expect("(");
+        node->lhs = expr();
+        expect(")");
+        node->rhs = calloc(1, sizeof(Node));
+        node->rhs->lhs = stmt();
+        if(consume_kind(TK_ELSE)) {
+            node->rhs->rhs = stmt();
+        } else {
+            node->rhs->rhs = NULL;
+        }
     } else {
         node = expr();
+
+        expect(";");
     }
-    expect(";");
     return node;
 }
 
