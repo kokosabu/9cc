@@ -61,6 +61,19 @@ void gen(Node *node)
             }
             printf(".Lend%d:\n", locallabel);
             return;
+        case ND_WHILE:
+            locallabel = labelnum;
+            labelnum += 1;
+
+            printf(".Lbegin%d:\n", locallabel);
+            gen(node->lhs);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je  .Lend%d\n", locallabel);
+            gen(node->rhs);
+            printf("  jmp .Lbegin%d\n", locallabel);
+            printf(".Lend%d:\n", locallabel);
+            return;
         default:
             ;
     }

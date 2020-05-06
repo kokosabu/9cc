@@ -141,6 +141,11 @@ Token *tokenize(char *p)
             p += 4;
             continue;
         }
+        if(strncmp(p, "while", 5) == 0 && !(isalnum(p[5]) || p[5] == '_')) {
+            cur = new_token(TK_WHILE, cur, p, 5);
+            p += 5;
+            continue;
+        }
 
         //if(strchr("abcdefghijklmnopqrstuvwxyz", *p)) {
         //if('a' <= *p && *p <= 'z') {
@@ -332,6 +337,7 @@ Node *expr()
 // stmt =  expr ";"
 //       | "return" expr ";"
 //       | "if" "(" expr ")" stmt ("else" stmt)?
+//       | "while" "(" expr ")" stmt
 Node *stmt()
 {
     Node *node;
@@ -355,6 +361,13 @@ Node *stmt()
         } else {
             node->rhs->rhs = NULL;
         }
+    } else if(consume_kind(TK_WHILE)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_WHILE;
+        expect("(");
+        node->lhs = expr();
+        expect(")");
+        node->rhs = stmt();
     } else {
         node = expr();
 

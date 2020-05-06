@@ -53,6 +53,7 @@ assert 3 "elsea=1;if (elsea==1) return 3; else return 5;"
 assert 5 "elsea=0;if(elsea==1 ) return 3; else return 5;"
 assert 2 "a=2; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
 assert 3 "a=3; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
+assert 6 "a=0; b=1; c=1; while(a<5) a = a + 2; a;"
 
 #assert 0 '0==1'
 #assert 1 '42==42'
