@@ -55,6 +55,8 @@ assert 2 "a=2; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2
 assert 3 "a=3; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
 assert 6 "a=0; b=1; c=1; while(a<5) a = a + 2; a;"
 assert 8 "for(3;a<7;a = a + 2) 3; a;"
+assert 3 "{ a = 0; a = a + 1; a = a * 3; }"
+assert 8 "a=0; b=1; while(a<3) {a = a + 1; b = 2 * b;} b;"
 
 #assert 0 '0==1'
 #assert 1 '42==42'

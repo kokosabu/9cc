@@ -50,6 +50,7 @@ typedef enum {
     ND_THEN,   // then ( lhs = true's stmt, rhs = false's stmt )
     ND_WHILE,  // while ( lhs = expr, rhs = stmt )
     ND_FOR,    // for { expr(A), { expr(B), { expr(C), stmt(D) } } }
+    ND_BLOCK,  // { stmt, { stmt, { stmt, ... } } }
     ND_LVAR,   // ローカル変数
     ND_NUM,    // 整数
 } NodeKind;

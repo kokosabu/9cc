@@ -121,7 +121,7 @@ Token *tokenize(char *p)
             continue;
         }
 
-        if(strchr("+-*/();=", *p)) {
+        if(strchr("+-*/();={}", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
@@ -340,6 +340,7 @@ Node *expr()
 }
 
 // stmt =  expr ";"
+//       | "{" stmt* "}"
 //       | "return" expr ";"
 //       | "if" "(" expr ")" stmt ("else" stmt)?
 //       | "while" "(" expr ")" stmt
@@ -402,6 +403,19 @@ Node *stmt()
             expect(")");
         }
         node->rhs->rhs->rhs = stmt();
+    } else if(consume("{")) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_BLOCK;
+        node->lhs = NULL;
+        node->rhs = NULL;
+        Node *cur = node;
+        while(!consume("}")) {
+            cur->lhs = stmt();
+            cur->rhs = calloc(1, sizeof(Node));
+            cur = cur->rhs;
+            cur->lhs = NULL;
+            cur->rhs = NULL;
+        }
     } else {
         node = expr();
 
