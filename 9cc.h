@@ -1,5 +1,14 @@
 /* 型の定義 */
 
+typedef struct Function Function;
+
+// 関数の型
+struct Function {
+    Function *next; // 次の関数かNULL
+    char *name; // 関数の名前
+    int len;    // 名前の長さ
+};
+
 typedef struct LVar LVar;
 
 // ローカル変数の型
@@ -51,6 +60,7 @@ typedef enum {
     ND_WHILE,  // while ( lhs = expr, rhs = stmt )
     ND_FOR,    // for { expr(A), { expr(B), { expr(C), stmt(D) } } }
     ND_BLOCK,  // { stmt, { stmt, { stmt, ... } } }
+    ND_FUNC,   // 関数コール
     ND_LVAR,   // ローカル変数
     ND_NUM,    // 整数
 } NodeKind;
@@ -64,6 +74,7 @@ struct Node {
     Node *rhs;     // 右辺
     int val;       // kindがND_NUMの場合のみ使う
     int offset;    // kindがND_LVARの場合のみ使う
+    char *name;    // kindが
 };
 
 /* グローバル変数 */
@@ -72,6 +83,9 @@ extern Token *token;
 
 // ローカル変数
 LVar *locals;
+
+//
+Function *functions;
 
 // 入力プログラム
 extern char *user_input;
@@ -90,11 +104,13 @@ void expect(char *op);
 int expect_number();
 bool at_eof();
 LVar *find_lvar(Token *tok);
+Function *find_function(Token *tok);
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 Token *tokenize(char *p);
 Node *new_node(NodeKind kind, Node*lhs, Node*rhs);
 Node *new_node_num(int val);
 Node *new_node_ident(Token *tok);
+Node *new_node_function(Token *tok);
 Node *primary();
 Node *unary();
 Node *mul();

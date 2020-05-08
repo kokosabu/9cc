@@ -1,3 +1,9 @@
+#ifdef __STDC_ALLOC_LIB__
+#define __STDC_WANT_LIB_EXT2__ 1
+#else
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -77,6 +83,17 @@ LVar *find_lvar(Token *tok)
     for(LVar *var = locals; var; var = var->next) {
         if(var->len == tok->len && !memcmp(tok->str, var->name, var->len)) {
             return var;
+        }
+    }
+    return NULL;
+}
+
+// 関数を名前で検索する。見つからなかった場合はNULLを返す。
+Function *find_function(Token *tok)
+{
+    for(Function *func = functions; func; func = func->next) {
+        if(func->len == tok->len && !memcmp(tok->str, func->name, func->len)) {
+            return func;
         }
     }
     return NULL;
@@ -222,7 +239,30 @@ Node *new_node_ident(Token *tok)
     return node;
 }
 
-// primary = num | ident | "(" expr ")"
+Node *new_node_function(Token *tok)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_FUNC;
+
+    Function *function = find_function(tok);
+    if(function) {
+        node->name = strndup(tok->str, tok->len);
+    } else {
+        function = calloc(1, sizeof(LVar));
+        function->next = functions;
+        function->name = tok->str;
+        function->len = tok->len;
+        functions = function;
+
+        node->name = strndup(tok->str, tok->len);
+    }
+    return node;
+}
+
+
+// primary =  num
+//          | ident ("(" ")")?
+//          | "(" expr ")"
 Node *primary()
 {
     // 次のトークンが"("なら、"(" expr ")"のはず
@@ -234,7 +274,12 @@ Node *primary()
 
     Token *tok = consume_ident();
     if(tok) {
-        return new_node_ident(tok);
+        if(consume("(")) {
+            expect(")");
+            return new_node_function(tok);
+        } else {
+            return new_node_ident(tok);
+        }
     }
 
     // そうでなければ数値のはず

@@ -58,6 +58,10 @@ assert 8 "for(3;a<7;a = a + 2) 3; a;"
 assert 3 "{ a = 0; a = a + 1; a = a * 3; }"
 assert 8 "a=0; b=1; while(a<3) {a = a + 1; b = 2 * b;} b;"
 
+./9cc "foo();" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
 #assert 0 '0==1'
 #assert 1 '42==42'
 #assert 1 '0!=1'

@@ -107,6 +107,22 @@ void gen(Node *node)
             }
             //printf("  pop rax\n");
             return;
+        case ND_FUNC:
+            locallabel = labelnum;
+            labelnum += 1;
+
+            printf("  push rsp\n");
+
+            // 8の倍数かチェック。8の倍数ならzero flag 0, 8の倍数でなければ zero flag 1
+            printf("  test rsp, 8\n");
+            printf("  jne .Lend%d\n", locallabel);
+            printf("  sub rsp, 8\n");
+            printf(".Lend%d:\n", locallabel);
+
+            printf("  call %s\n", node->name);
+
+            printf("  pop rsp\n");
+            return;
         default:
             ;
     }
