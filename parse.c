@@ -138,7 +138,7 @@ Token *tokenize(char *p)
             continue;
         }
 
-        if(strchr("+-*/();={}", *p)) {
+        if(strchr("+-*/();={},", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
@@ -243,6 +243,8 @@ Node *new_node_function(Token *tok)
 {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FUNC;
+    node->lhs = NULL;
+    node->rhs = NULL;
 
     Function *function = find_function(tok);
     if(function) {
@@ -261,7 +263,7 @@ Node *new_node_function(Token *tok)
 
 
 // primary =  num
-//          | ident ("(" ")")?
+//          | ident ("(" (expr ",")* ")")?
 //          | "(" expr ")"
 Node *primary()
 {
@@ -275,8 +277,27 @@ Node *primary()
     Token *tok = consume_ident();
     if(tok) {
         if(consume("(")) {
-            expect(")");
-            return new_node_function(tok);
+            Node *node = new_node_function(tok);
+            if(consume(")")) {
+                return node;
+            } else {
+                node->rhs = calloc(1, sizeof(Node));
+                Node *n = node->rhs;
+                while(1) {
+                    n->lhs = expr();
+                    if(consume(",")) {
+                        n->rhs = calloc(1, sizeof(Node));
+                        n->rhs->lhs = NULL;
+                        n->rhs->rhs = NULL;
+                        n = n->rhs;
+                    } else {
+                        n->rhs = NULL;
+                        break;
+                    }
+                }
+                expect(")");
+                return node;
+            }
         } else {
             return new_node_ident(tok);
         }

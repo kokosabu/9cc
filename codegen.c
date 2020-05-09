@@ -16,6 +16,42 @@ void gen_lval(Node *node)
     printf("  push rax\n");
 }
 
+void gen_args(Node *node, int argnum)
+{
+    gen(node->lhs); // exprが処理され結果がスタックに追加されている
+    if(node->rhs) {
+        // 次の引数がある
+        gen_args(node->rhs, argnum+1);
+    } else {
+        // 次の引数がない
+        ;
+    }
+
+    if(argnum == 1) {
+        printf("  pop rax\n");
+        printf("  mov rdi, rax\n");
+        //printf("  mov rdi, 5\n");
+        //printf("  mov edi, eax\n");
+    } else if(argnum == 2) {
+        printf("  pop rax\n");
+        printf("  mov rsi, rax\n");
+    } else if(argnum == 3) {
+        printf("  pop rax\n");
+        printf("  mov rdx, rax\n");
+    } else if(argnum == 4) {
+        printf("  pop rax\n");
+        printf("  mov rcx, rax\n");
+    } else if(argnum == 5) {
+        printf("  pop rax\n");
+        printf("  mov r8, rax\n");
+    } else if(argnum == 6) {
+        printf("  pop rax\n");
+        printf("  mov r9, rax\n");
+    } else {
+        /* 7以上はスタックに残しておけば良い */;
+    }
+}
+
 void gen(Node *node)
 {
     int locallabel;
@@ -111,17 +147,21 @@ void gen(Node *node)
             locallabel = labelnum;
             labelnum += 1;
 
-            printf("  push rsp\n");
+
+            //printf("  push rsp\n");
 
             // 8の倍数かチェック。8の倍数ならzero flag 0, 8の倍数でなければ zero flag 1
-            printf("  test rsp, 8\n");
-            printf("  jne .Lend%d\n", locallabel);
-            printf("  sub rsp, 8\n");
-            printf(".Lend%d:\n", locallabel);
+            //printf("  test rsp, 8\n");
+            //printf("  jne .Lend%d\n", locallabel);
+            //printf("  sub rsp, 8\n");
+            //printf(".Lend%d:\n", locallabel);
 
+            if(node->rhs != NULL) {
+                gen_args(node->rhs, 1);
+            }
             printf("  call %s\n", node->name);
 
-            printf("  pop rsp\n");
+            //printf("  pop rsp\n");
             return;
         default:
             ;

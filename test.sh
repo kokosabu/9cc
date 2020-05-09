@@ -58,9 +58,46 @@ assert 8 "for(3;a<7;a = a + 2) 3; a;"
 assert 3 "{ a = 0; a = a + 1; a = a * 3; }"
 assert 8 "a=0; b=1; while(a<3) {a = a + 1; b = 2 * b;} b;"
 
-./9cc "foo();" > tmp.s
+./9cc "foo0();" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
+
+./9cc "foo1(1);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo2(1,2);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo3(1,2,3);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo4(1,2,3,4);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo5(1,2,3,4,5);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo6(1,2,3,4,5,6);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo7(1,2,3,4,5,6,7);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo8(1,2,3,4,5,6,7,8);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
+./9cc "foo9(1,2,3,4,5,6,7,8,9);" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
+
 
 #assert 0 '0==1'
 #assert 1 '42==42'
