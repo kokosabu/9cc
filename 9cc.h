@@ -91,6 +91,7 @@ Function *functions;
 extern char *user_input;
 
 extern Node* code[];
+extern Node* func_def[];
 
 extern int labelnum;
 
@@ -120,6 +121,7 @@ Node *equality();
 Node *assign();
 Node *expr();
 Node *stmt();
+Node *function();
 Node *program();
 void gen(Node *node);
 void codegen();

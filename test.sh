@@ -16,106 +16,93 @@ assert() {
     fi
 }
 
-assert 0 "0;"
-assert 42 "42;"
-assert 21 "5+20-4;"
-assert 41 " 12 + 34 - 5 ;"
-assert 47 '5+6*7;'
-assert 15 '5*(9-6);'
-assert 4 '(3+5)/2;'
-assert 10 '-10+20;'
-assert 30 '+10+20;'
-assert 10 '- -10;'
-assert 10 '- - +10;'
-assert 1 "5+20-4 == 21;"
-assert 0 "- -10 == 21;"
-assert 1 " 12 + 34 - 5 != 40;"
-assert 0 '5+6*7 != 47;'
-assert 1 "5*(9-6) < 16;"
-assert 0 "5*(9-6) < 15;"
-assert 1 "16 >= 5*(9-6);"
-assert 0 "15-1 >= 5*(9-6);"
-assert 1 '4 <= (3+5)/2;'
-assert 0 '5 <= (3+5)/2;'
-assert 1 '(3+5)/2 > 3;'
-assert 0 '(3+5)/2 > 4;'
-assert 3 "a=3;"
-assert 6 "a=3+3;"
-assert 4 "a=4; a;"
-assert 4 "foo=4; foo;"
-assert 7 "foo=4; bar=3; foo+bar;"
-assert 7 "foo=4; fox=3; foo+fox;"
-assert 7 "return 7; return 5;"
-assert 3 "foo=3; return foo;"
-assert 4 "return (3+5)/2;"
-assert 3 "ifa=1;if(ifa==1) return 3;"
-assert 3 "elsea=1;if (elsea==1) return 3; else return 5;"
-assert 5 "elsea=0;if(elsea==1 ) return 3; else return 5;"
-assert 2 "a=2; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
-assert 3 "a=3; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3;"
-assert 6 "a=0; b=1; c=1; while(a<5) a = a + 2; a;"
-assert 8 "for(3;a<7;a = a + 2) 3; a;"
-assert 3 "{ a = 0; a = a + 1; a = a * 3; }"
-assert 8 "a=0; b=1; while(a<3) {a = a + 1; b = 2 * b;} b;"
+assert  0 "main() { 0; }"
+assert 42 "main() { 42; }"
+assert 21 "main() { 5+20-4; }"
+assert 41 "main() {  12 + 34 - 5 ; }"
+assert 47 'main() { 5+6*7; }'
+assert 15 'main() { 5*(9-6); }'
+assert  4 'main() { (3+5)/2; }'
+assert 10 'main() { -10+20; }'
+assert 30 'main() { +10+20; }'
+assert 10 'main() { - -10; }'
+assert 10 'main() { - - +10; }'
+assert  1 "main() { 5+20-4 == 21; }"
+assert  0 "main() { - -10 == 21; }"
+assert  1 "main() {  12 + 34 - 5 != 40; }"
+assert  0 'main() { 5+6*7 != 47; }'
+assert  1 "main() { 5*(9-6) < 16; }"
+assert  0 "main() { 5*(9-6) < 15; }"
+assert  1 "main() { 16 >= 5*(9-6); }"
+assert  0 "main() { 15-1 >= 5*(9-6); }"
+assert  1 'main() { 4 <= (3+5)/2; }'
+assert  0 'main() { 5 <= (3+5)/2; }'
+assert  1 'main() { (3+5)/2 > 3; }'
+assert  0 'main() { (3+5)/2 > 4; }'
+assert  3 "main() { a=3; }"
+assert  6 "main() { a=3+3; }"
+assert  4 "main() { a=4; a; }"
+assert  4 "main() { foo=4; foo; }"
+assert  7 "main() { foo=4; bar=3; foo+bar; }"
+assert  7 "main() { foo=4; fox=3; foo+fox; }"
+assert  7 "main() { return 7; return 5; }"
+assert  3 "main() { foo=3; return foo; }"
+assert  4 "main() { return (3+5)/2; }"
+assert  3 "main() { ifa=1;if(ifa==1) return 3; }"
+assert  3 "main() { elsea=1;if (elsea==1) return 3; else return 5; }"
+assert  5 "main() { elsea=0;if(elsea==1 ) return 3; else return 5; }"
+assert  2 "main() { a=2; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3; }"
+assert  3 "main() { a=3; if(a==0) return 0; else if(a==1) return 1; else if(a==2) return 2; else return 3; }"
+assert  6 "main() { a=0; b=1; c=1; while(a<5) a = a + 2; a; }"
+assert  8 "main() { for(3;a<7;a = a + 2) 3; a; }"
+assert  3 "main() { { a = 0; a = a + 1; a = a * 3; } }"
+assert  8 "main() { a=0; b=1; while(a<3) {a = a + 1; b = 2 * b;} b; }"
 
-./9cc "foo0();" > tmp.s
+./9cc "main(){foo0();}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo1(1);" > tmp.s
+./9cc "main(){foo1(1);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo2(1,2);" > tmp.s
+./9cc "main(){foo2(1,2);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo3(1,2,3);" > tmp.s
+./9cc "main(){foo3(1,2,3);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo4(1,2,3,4);" > tmp.s
+./9cc "main(){foo4(1,2,3,4);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo5(1,2,3,4,5);" > tmp.s
+./9cc "main(){foo5(1,2,3,4,5);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo6(1,2,3,4,5,6);" > tmp.s
+./9cc "main(){foo6(1,2,3,4,5,6);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo7(1,2,3,4,5,6,7);" > tmp.s
+./9cc "main(){foo7(1,2,3,4,5,6,7);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo8(1,2,3,4,5,6,7,8);" > tmp.s
+./9cc "main(){foo8(1,2,3,4,5,6,7,8);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
-./9cc "foo9(1,2,3,4,5,6,7,8,9);" > tmp.s
+./9cc "main(){foo9(1,2,3,4,5,6,7,8,9);}" > tmp.s
 cc -o tmp tmp.s lib.c
 ./tmp
 
 
-#assert 0 '0==1'
-#assert 1 '42==42'
-#assert 1 '0!=1'
-#assert 0 '42!=42'
+./9cc "main(){bar();}bar(){foo0();}" > tmp.s
+cc -o tmp tmp.s lib.c
+./tmp
 
-#assert 1 '0<1'
-#assert 0 '1<1'
-#assert 0 '2<1'
-#assert 1 '0<=1'
-#assert 1 '1<=1'
-#assert 0 '2<=1'
-
-#assert 1 '1>0'
-#assert 0 '1>1'
-#assert 0 '1>2'
-#assert 1 '1>=0'
-#assert 1 '1>=1'
-#assert 0 '1>=2'
+assert 7 "main(){a = bar(); a;} bar(){return 3+4;}"
 
 echo OK

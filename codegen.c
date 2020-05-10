@@ -216,29 +216,37 @@ void gen(Node *node)
 
 void codegen()
 {
-    // アセンブリの前半部分を出力
+    Node *code;
+
     printf(".intel_syntax noprefix\n");
-    printf(".global main\n");
-    printf("main:\n");
 
-    // プロローグ
-    // 変数26個分の領域を確保する
-    printf("  push rbp\n");
-    printf("  mov rbp, rsp\n");
-    printf("  sub rsp, %d\n", 26*8);
+    // 先頭の関数定義から順にコード生成
+    for(int i = 0; func_def[i]; i++) {
+        // アセンブリの前半部分を出力
+        printf(".global %s\n", func_def[i]->name);
+        printf("%s:\n", func_def[i]->name);
 
-    // 先頭の式から順にコード生成
-    for(int i = 0; code[i]; i++) {
-        gen(code[i]);
+        // プロローグ
+        // 変数26個分の領域を確保する
+        printf("  push rbp\n");
+        printf("  mov rbp, rsp\n");
+        printf("  sub rsp, %d\n", 26*8);
 
-        // 式の評価結果としてスタックに一つの値が残っている
-        // はずなので、スタックが溢れないようにポップしておく
-        printf("  pop rax\n");
+        // 先頭の式から順にコード生成
+        code = func_def[i];
+        while(code->lhs) {
+            gen(code->lhs);
+            // 式の評価結果としてスタックに一つの値が残っている
+            // はずなので、スタックが溢れないようにポップしておく
+            printf("  pop rax\n");
+
+            code = code->rhs;
+        }
+
+        // エピローグ
+        // 最後の式の結果がRAXに残っているのでそれが返り値になる
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
     }
-
-    // エピローグ
-    // 最後の式の結果がRAXに残っているのでそれが返り値になる
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
 }

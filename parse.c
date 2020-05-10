@@ -239,6 +239,7 @@ Node *new_node_ident(Token *tok)
     return node;
 }
 
+/* CALLER, CALLEE共通なので後で直さないといけなくなりそう */
 Node *new_node_function(Token *tok)
 {
     Node *node = calloc(1, sizeof(Node));
@@ -490,14 +491,39 @@ Node *stmt()
     return node;
 }
 
-Node *code[100];
+// function = ident "(" (ident ",")* ")" "{" stmt* "}"
+Node *function()
+{
+    int i = 0;
 
-// program = stmt*
+    Token *tok = consume_ident();
+    Node *root = new_node_function(tok);
+    Node *node = root;
+    node->lhs = NULL;
+    node->rhs = NULL;
+
+    expect("(");
+    expect(")"); /* 引数の処理がここに入る */
+    expect("{");
+    while(!consume("}")) {
+        node->lhs = stmt();
+        node->rhs = calloc(1, sizeof(Node));
+        node->rhs->lhs = NULL;
+        node->rhs->rhs = NULL;
+        node = node->rhs;
+    }
+
+    return root;
+}
+
+Node *func_def[100];
+
+// program = function*
 Node *program()
 {
     int i = 0;
     while(!at_eof()) {
-        code[i++] = stmt();
+        func_def[i++] = function();
     }
-    code[i] = NULL;
+    func_def[i] = NULL;
 }
