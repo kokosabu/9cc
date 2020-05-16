@@ -62,6 +62,7 @@ typedef enum {
     ND_BLOCK,  // { stmt, { stmt, { stmt, ... } } }
     ND_FUNC,   // 関数コール
     ND_LVAR,   // ローカル変数
+    ND_ARG,    // 引数
     ND_NUM,    // 整数
 } NodeKind;
 
@@ -111,6 +112,7 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 Token *tokenize(char *p);
 Node *new_node(NodeKind kind, Node*lhs, Node*rhs);
 Node *new_node_num(int val);
+Node *new_node_arg(Token *tok);
 Node *new_node_ident(Token *tok);
 Node *new_node_function(Token *tok);
 Node *primary();

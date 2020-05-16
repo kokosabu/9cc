@@ -218,6 +218,26 @@ Node *new_node_num(int val)
     return node;
 }
 
+Node *new_node_arg(Token *tok)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_ARG;
+
+    LVar *lvar = find_lvar(tok);
+    if(lvar) {
+        error("引数名が重複しています。");
+    } else {
+        lvar = calloc(1, sizeof(LVar));
+        lvar->next = locals;
+        lvar->name = tok->str;
+        lvar->len = tok->len;
+        lvar->offset = locals->offset + 8;
+        node->offset = lvar->offset;
+        locals = lvar;
+    }
+    return node;
+}
+
 Node *new_node_ident(Token *tok)
 {
     Node *node = calloc(1, sizeof(Node));
@@ -503,10 +523,17 @@ Node *function()
     node->rhs = NULL;
 
     expect("(");
-    if(consume(")")) {
+    tok = consume_ident();
+    if(tok) {
+        node->lhs = new_node_arg(tok);
+        node->rhs = calloc(1, sizeof(Node));
+        node->rhs->lhs = NULL;
+        node->rhs->rhs = NULL;
+        node = node->rhs;
     } else {
-        expect(")");
+        ;
     }
+    expect(")");
     expect("{");
     while(!consume("}")) {
         node->lhs = stmt();

@@ -106,5 +106,6 @@ cc -o tmp tmp.s lib.c
 assert 7 "main(){a = bar(); a;} bar(){return 3+4;}"
 assert 7 "main(){return bar();} bar(){return foo();} foo(){return 7;}"
 assert 7 "main(){return bar();} bar(){a = foo(); return a;} foo(){a = 3; b = 4;return a+b;}"
+assert 7 "main(){return bar(3);} bar(a){return a+4;}"
 
 echo OK

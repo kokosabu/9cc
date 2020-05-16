@@ -163,6 +163,17 @@ void gen(Node *node)
             printf("  push rax\n");
             //printf("  pop rsp\n");
             return;
+        case ND_ARG:
+            // レジスタやスタックからローカル変数用のスタックへコピー
+            // 引数1個の場合はこんなアセンブリを生成したい
+            printf("  mov rax, rbp\n");
+            printf("  sub rax, %d\n", 8); // node->offsetより計算値を出す
+            printf("  push rax\n");
+
+            printf("  pop rax\n");
+            printf("  mov [rax], rdi\n"); // 何個めの引数かでrdiの箇所が変わる
+            printf("  push rax\n");
+            return;
         default:
             ;
     }
