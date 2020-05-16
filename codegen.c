@@ -160,7 +160,7 @@ void gen(Node *node)
                 gen_args(node->rhs, 1);
             }
             printf("  call %s\n", node->name);
-
+            printf("  push rax\n");
             //printf("  pop rsp\n");
             return;
         default:

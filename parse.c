@@ -503,7 +503,10 @@ Node *function()
     node->rhs = NULL;
 
     expect("(");
-    expect(")"); /* 引数の処理がここに入る */
+    if(consume(")")) {
+    } else {
+        expect(")");
+    }
     expect("{");
     while(!consume("}")) {
         node->lhs = stmt();
