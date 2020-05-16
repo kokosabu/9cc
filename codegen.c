@@ -226,11 +226,16 @@ void codegen()
         printf(".global %s\n", func_def[i]->name);
         printf("%s:\n", func_def[i]->name);
 
+        int count = 0;
+        for(LVar* v = func_locals[i]; v != NULL; v = v->next) {
+            count++;
+        }
+
         // プロローグ
-        // 変数26個分の領域を確保する
+        // 変数分の領域を確保する
         printf("  push rbp\n");
         printf("  mov rbp, rsp\n");
-        printf("  sub rsp, %d\n", 26*8);
+        printf("  sub rsp, %d\n", (count-1)*8);
 
         // 先頭の式から順にコード生成
         code = func_def[i];

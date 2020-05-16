@@ -94,6 +94,7 @@ extern Node* code[];
 extern Node* func_def[];
 
 extern int labelnum;
+extern LVar *func_locals[100];
 
 /* プロトタイプ宣言 */
 void error(char *fmt, ...);

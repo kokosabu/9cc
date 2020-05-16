@@ -520,13 +520,23 @@ Node *function()
 }
 
 Node *func_def[100];
+LVar *func_locals[100];
 
 // program = function*
 Node *program()
 {
     int i = 0;
     while(!at_eof()) {
-        func_def[i++] = function();
+        // ローカル変数の起点作成
+        locals = calloc(1, sizeof(LVar));
+        locals->next = NULL;
+        locals->name = "*";
+        locals->len = 1;
+        locals->offset = 0;
+
+        func_def[i] = function();
+        func_locals[i] = locals;
+        i++;
     }
     func_def[i] = NULL;
 }
