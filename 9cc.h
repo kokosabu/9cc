@@ -126,5 +126,7 @@ Node *expr();
 Node *stmt();
 Node *function();
 Node *program();
+void gen_args(Node *node, int argnum);
+void gen_args_def(Node *node, int argnum);
 void gen(Node *node);
 void codegen();

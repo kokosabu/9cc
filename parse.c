@@ -232,6 +232,7 @@ Node *new_node_arg(Token *tok)
         lvar->name = tok->str;
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
+        //fprintf(stderr, "lvar : name %s, len %d, offset %d\n", lvar->name, lvar->len, lvar->offset);
         node->offset = lvar->offset;
         locals = lvar;
     }
@@ -529,19 +530,40 @@ Node *function()
         node->rhs = calloc(1, sizeof(Node));
         node->rhs->lhs = NULL;
         node->rhs->rhs = NULL;
-        node = node->rhs;
+
+        Node *n = node->lhs;
+        while(1) {
+            if(consume(",")) {
+                tok = consume_ident();
+                //fprintf(stderr, "[%s]\n", tok->str);
+                if(tok) {
+                    n->lhs = new_node_arg(tok);
+                    n->rhs = NULL;
+                    n = n->lhs;
+                } else {
+                    n->lhs = NULL;
+                    error("引数が必要です。");
+                }
+            } else {
+                break;
+            }
+        }
+
+        node = root->rhs;
     } else {
         ;
     }
     expect(")");
     expect("{");
     while(!consume("}")) {
+        //fprintf(stderr, "[code] %s\n", token->str);
         node->lhs = stmt();
         node->rhs = calloc(1, sizeof(Node));
         node->rhs->lhs = NULL;
         node->rhs->rhs = NULL;
         node = node->rhs;
     }
+    //fprintf(stderr, "[code] Done\n");
 
     return root;
 }

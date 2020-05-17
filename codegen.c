@@ -52,6 +52,60 @@ void gen_args(Node *node, int argnum)
     }
 }
 
+void gen_args_def(Node *node, int argnum)
+{
+    //fprintf(stderr, "args_def: offset %d\n", node->offset);
+    //fprintf(stderr, "args_def: name %s\n", node->name);
+    if(node->lhs) {
+        // 次の引数がある
+        gen_args_def(node->lhs, argnum+1);
+    } else {
+        // 次の引数がない
+        ;
+    }
+
+    // レジスタやスタックからローカル変数用のスタックへコピー
+    printf("  mov rax, rbp\n");
+    printf("  sub rax, %d\n", node->offset);
+    printf("  push rax\n");
+
+    //fprintf(stderr, "argnum %d: name %s, offset %d\n", argnum, node->name, node->offset);
+    if(argnum == 1) {
+        printf("  pop rax\n");
+        printf("  mov [rax], rdi\n");
+    } else if(argnum == 2) {
+        printf("  pop rax\n");
+        printf("  mov [rax], rsi\n");
+    } else if(argnum == 3) {
+        printf("  pop rax\n");
+        printf("  mov [rax], rdx\n");
+    } else if(argnum == 4) {
+        printf("  pop rax\n");
+        printf("  mov [rax], rcx\n");
+    } else if(argnum == 5) {
+        printf("  pop rax\n");
+        printf("  mov [rax], r8\n");
+    } else if(argnum == 6) {
+        printf("  pop rax\n");
+        printf("  mov [rax], r9\n");
+    } else {
+#if 0
+        printf("  mov rax, rbp\n");
+        printf("  add rax, %d\n", 0x10);
+        printf("  mov rdi, [rax]\n");
+        printf("  push rdi\n");
+
+        printf("  pop rdi\n");
+        printf("  pop rax\n");
+        printf("  mov [rax], rdi\n");
+#else
+        printf("  pop rax\n");
+        //printf("  pop rdi\n");
+        printf("  mov [rax], rdi\n");
+#endif
+    }
+}
+
 void gen(Node *node)
 {
     int locallabel;
@@ -164,14 +218,7 @@ void gen(Node *node)
             //printf("  pop rsp\n");
             return;
         case ND_ARG:
-            // レジスタやスタックからローカル変数用のスタックへコピー
-            // 引数1個の場合はこんなアセンブリを生成したい
-            printf("  mov rax, rbp\n");
-            printf("  sub rax, %d\n", 8); // node->offsetより計算値を出す
-            printf("  push rax\n");
-
-            printf("  pop rax\n");
-            printf("  mov [rax], rdi\n"); // 何個めの引数かでrdiの箇所が変わる
+            gen_args_def(node, 1);
             printf("  push rax\n");
             return;
         default:
