@@ -138,7 +138,7 @@ Token *tokenize(char *p)
             continue;
         }
 
-        if(strchr("+-*/();={},", *p)) {
+        if(strchr("+-*/();={},&", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
@@ -329,10 +329,17 @@ Node *primary()
     return new_node_num(expect_number());
 }
 
-// unary = ("+" | "-")? primary
+// unary =  "+"? primary
+//        | "-"? primary
+//        | "*" unary
+//        | "&" unary
 Node *unary()
 {
-    if(consume("+")) {
+    if(consume("*")) {
+        return new_node(ND_DEREF, unary(), NULL);
+    } else if(consume("&")) {
+        return new_node(ND_ADDR, unary(), NULL);
+    } else if(consume("+")) {
         return unary();
     } else if(consume("-")) {
         return new_node(ND_SUB, new_node_num(0), unary());

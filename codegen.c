@@ -221,6 +221,15 @@ void gen(Node *node)
             gen_args_def(node, 1);
             printf("  push rax\n");
             return;
+        case ND_ADDR:
+            gen_lval(node->lhs);
+            return;
+        case ND_DEREF:
+            gen_lval(node->lhs);
+            printf("  pop rax\n");
+            printf("  mov rax, [rax]\n");
+            printf("  push rax\n");
+            return;
         default:
             ;
     }
