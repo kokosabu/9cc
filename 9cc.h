@@ -117,6 +117,7 @@ Node *new_node(NodeKind kind, Node*lhs, Node*rhs);
 Node *new_node_num(int val);
 Node *new_node_arg(Token *tok);
 Node *new_node_ident(Token *tok);
+Node *new_node_ident_decl(Token *tok);
 Node *new_node_function(Token *tok);
 Node *primary();
 Node *unary();

@@ -253,6 +253,20 @@ Node *new_node_ident(Token *tok)
     if(lvar) {
         node->offset = lvar->offset;
     } else {
+        error("未定義の変数です。");
+    }
+    return node;
+}
+
+Node *new_node_ident_decl(Token *tok)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+
+    LVar *lvar = find_lvar(tok);
+    if(lvar) {
+        node->offset = lvar->offset;
+    } else {
         lvar = calloc(1, sizeof(LVar));
         lvar->next = locals;
         lvar->name = tok->str;
@@ -507,7 +521,7 @@ Node *stmt()
     } else if(consume_kind(TK_INT)) {
         // ident
         Token *tok = consume_ident();
-        node = new_node_ident(tok);
+        node = new_node_ident_decl(tok);
         expect(";");
     } else if(consume("{")) {
         node = calloc(1, sizeof(Node));

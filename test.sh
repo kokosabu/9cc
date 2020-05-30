@@ -124,6 +124,8 @@ assert 5 "main(){return bar(0,1,2,3,4,5);} bar(a,b,c,d,e,f) {return f;}"
 assert 3 "main(){int x; int y; x = 3; y = &x; return *x;}"
 assert 3 "main(){int x; int y; int z; x = 3; y = 5; z = &y + 8; return *x;}"
 
+# ./9cc "main(){int x; y = 3;}" # errorになる
+
 #assert 6 "main(){return bar(0,1,2,3,4,5,6);} bar(a,b,c,d,e,f,g) {return g;}"
 #assert 7 "main(){return bar(0,1,2,3,4,5,6,7);} bar(a,b,c,d,e,f,g,h) {return h;}"
 #assert 0 "main(){return bar(0,1,2,3,4,5,6,7,8,9);} bar(a,b,c,d,e,f,g,h,i,j) {return a;}"
