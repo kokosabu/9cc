@@ -544,10 +544,14 @@ Node *stmt()
     return node;
 }
 
-// function = ident "(" (ident ",")* ")" "{" stmt* "}"
+// function = "int" ident "(" (ident ",")* ")" "{" stmt* "}"
 Node *function()
 {
     int i = 0;
+
+    if(!consume_kind(TK_INT)) {
+        error("intが足りません。");
+    }
 
     Token *tok = consume_ident();
     Node *root = new_node_function(tok);
