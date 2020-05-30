@@ -168,6 +168,11 @@ Token *tokenize(char *p)
             p += 3;
             continue;
         }
+        if(strncmp(p, "int", 3) == 0 && !(isalnum(p[3]) || p[3] == '_')) {
+            cur = new_token(TK_INT, cur, p, 3);
+            p += 3;
+            continue;
+        }
 
         //if(strchr("abcdefghijklmnopqrstuvwxyz", *p)) {
         //if('a' <= *p && *p <= 'z') {
@@ -440,6 +445,7 @@ Node *expr()
 //       | "if" "(" expr ")" stmt ("else" stmt)?
 //       | "while" "(" expr ")" stmt
 //       | "for" "(" expr? ";" expr? ";" expr? ")" stmt
+//       | "int" ident ";" // 後でstmtと別にdeclをつくる?
 Node *stmt()
 {
     Node *node;
@@ -498,6 +504,11 @@ Node *stmt()
             expect(")");
         }
         node->rhs->rhs->rhs = stmt();
+    } else if(consume_kind(TK_INT)) {
+        // ident
+        Token *tok = consume_ident();
+        node = new_node_ident(tok);
+        expect(";");
     } else if(consume("{")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_BLOCK;
