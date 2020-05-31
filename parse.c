@@ -30,6 +30,7 @@ bool consume(char *op)
 bool consume_kind(TokenKind kind)
 {
     if(token->kind != kind) {
+        //fprintf(stderr, "[consume_kind] false %d\n", kind);
         return false;
     }
     token = token->next;
@@ -544,7 +545,7 @@ Node *stmt()
     return node;
 }
 
-// function = "int" ident "(" (ident ",")* ")" "{" stmt* "}"
+// function = "int" ident "(" ("int" ident ",")* ")" "{" stmt* "}"
 Node *function()
 {
     int i = 0;
@@ -560,8 +561,9 @@ Node *function()
     node->rhs = NULL;
 
     expect("(");
-    tok = consume_ident();
-    if(tok) {
+    if(consume_kind(TK_INT)) {
+        tok = consume_ident();
+        //fprintf(stderr, "[%s]\n", tok->str);
         node->lhs = new_node_arg(tok);
         node->rhs = calloc(1, sizeof(Node));
         node->rhs->lhs = NULL;
@@ -570,6 +572,7 @@ Node *function()
         Node *n = node->lhs;
         while(1) {
             if(consume(",")) {
+                consume_kind(TK_INT);
                 tok = consume_ident();
                 //fprintf(stderr, "[%s]\n", tok->str);
                 if(tok) {
