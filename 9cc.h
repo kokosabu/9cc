@@ -9,6 +9,18 @@ struct Function {
     int len;    // 名前の長さ
 };
 
+// 型の種類
+typedef enum {
+    INT, // INT型
+    PTR  // ポインタ型
+} TypeKind;
+
+typedef struct Type Type;
+struct Type {
+    TypeKind ty;
+    Type *ptr_to;
+};
+
 typedef struct LVar LVar;
 
 // ローカル変数の型
@@ -17,6 +29,7 @@ struct LVar {
     char *name; // 変数の名前
     int len;    // 名前の長さ
     int offset; // RBPからのオフセット
+    Type type;
 };
 
 // トークンの種類

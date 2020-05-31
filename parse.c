@@ -238,6 +238,7 @@ Node *new_node_arg(Token *tok)
         lvar->name = tok->str;
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
+        lvar->type.ty = INT;
         //fprintf(stderr, "lvar : name %s, len %d, offset %d\n", lvar->name, lvar->len, lvar->offset);
         node->offset = lvar->offset;
         locals = lvar;
@@ -273,6 +274,7 @@ Node *new_node_ident_decl(Token *tok)
         lvar->name = tok->str;
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
+        lvar->type.ty = INT;
         //lvar->offset = (lvar->name[0] - 'a' + 1) * 8;
         node->offset = lvar->offset;
         locals = lvar;
@@ -292,7 +294,7 @@ Node *new_node_function(Token *tok)
     if(function) {
         node->name = strndup(tok->str, tok->len);
     } else {
-        function = calloc(1, sizeof(LVar));
+        function = calloc(1, sizeof(Function));
         function->next = functions;
         function->name = tok->str;
         function->len = tok->len;
