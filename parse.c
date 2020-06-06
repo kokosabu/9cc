@@ -224,8 +224,9 @@ Node *new_node_num(int val)
     return node;
 }
 
-Node *new_node_arg(Token *tok)
+Node *new_node_arg(Token *tok, int p_num)
 {
+    Type *t;
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_ARG;
 
@@ -238,7 +239,13 @@ Node *new_node_arg(Token *tok)
         lvar->name = tok->str;
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
-        lvar->type.ty = INT;
+        t = &(lvar->type);
+        for(int i = p_num; i >= 0; i--) {
+            t->ty = PTR;
+            t->ptr_to = calloc(1, sizeof(Type));
+            t = t->ptr_to;
+        }
+        t->ty = INT;
         //fprintf(stderr, "lvar : name %s, len %d, offset %d\n", lvar->name, lvar->len, lvar->offset);
         node->offset = lvar->offset;
         locals = lvar;
@@ -575,9 +582,13 @@ Node *function()
 
     expect("(");
     if(consume_kind(TK_INT)) {
+        int p_num = 0;
+        while(consume("*")) {
+            p_num += 1;
+        }
         tok = consume_ident();
         //fprintf(stderr, "[%s]\n", tok->str);
-        node->lhs = new_node_arg(tok);
+        node->lhs = new_node_arg(tok, p_num);
         node->rhs = calloc(1, sizeof(Node));
         node->rhs->lhs = NULL;
         node->rhs->rhs = NULL;
@@ -586,10 +597,14 @@ Node *function()
         while(1) {
             if(consume(",")) {
                 consume_kind(TK_INT);
+                int p_num = 0;
+                while(consume("*")) {
+                    p_num += 1;
+                }
                 tok = consume_ident();
                 //fprintf(stderr, "[%s]\n", tok->str);
                 if(tok) {
-                    n->lhs = new_node_arg(tok);
+                    n->lhs = new_node_arg(tok, p_num);
                     n->rhs = NULL;
                     n = n->lhs;
                 } else {
