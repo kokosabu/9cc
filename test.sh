@@ -121,8 +121,8 @@ assert 3 "int main(){return bar(0,1,2,3,4,5);} int bar(int a,int b,int c,int d,i
 assert 4 "int main(){return bar(0,1,2,3,4,5);} int bar(int a,int b,int c,int d,int e,int f) {return e;}"
 assert 5 "int main(){return bar(0,1,2,3,4,5);} int bar(int a,int b,int c,int d,int e,int f) {return f;}"
 
-assert 3 "int main(){int x; int y; x = 3; y = &x; return *x;}"
-assert 3 "int main(){int x; int y; int z; x = 3; y = 5; z = &y + 8; return *x;}"
+assert 3 "int main(){int x; int *y; x = 3; y = &x; return *x;}"
+assert 3 "int main(){int x; int y; int *z; x = 3; y = 5; z = &y + 8; return *x;}"
 
 # ./9cc "int main(){int x; y = 3;}" # errorになる
 # ./9cc "main(){int x; x = 3;}" # errorになる

@@ -260,8 +260,9 @@ Node *new_node_ident(Token *tok)
     return node;
 }
 
-Node *new_node_ident_decl(Token *tok)
+Node *new_node_ident_decl(Token *tok, int p_num)
 {
+    Type *t;
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
 
@@ -274,7 +275,13 @@ Node *new_node_ident_decl(Token *tok)
         lvar->name = tok->str;
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
-        lvar->type.ty = INT;
+        t = &(lvar->type);
+        for(int i = p_num; i >= 0; i--) {
+            t->ty = PTR;
+            t->ptr_to = calloc(1, sizeof(Type));
+            t = t->ptr_to;
+        }
+        t->ty = INT;
         //lvar->offset = (lvar->name[0] - 'a' + 1) * 8;
         node->offset = lvar->offset;
         locals = lvar;
@@ -462,7 +469,7 @@ Node *expr()
 //       | "if" "(" expr ")" stmt ("else" stmt)?
 //       | "while" "(" expr ")" stmt
 //       | "for" "(" expr? ";" expr? ";" expr? ")" stmt
-//       | "int" ident ";" // 後でstmtと別にdeclをつくる?
+//       | "int" "*"* ident ";" // 後でstmtと別にdeclをつくる?
 Node *stmt()
 {
     Node *node;
@@ -522,9 +529,13 @@ Node *stmt()
         }
         node->rhs->rhs->rhs = stmt();
     } else if(consume_kind(TK_INT)) {
+        int p_num = 0;
+        while(consume("*")) {
+            p_num += 1;
+        }
         // ident
         Token *tok = consume_ident();
-        node = new_node_ident_decl(tok);
+        node = new_node_ident_decl(tok, p_num);
         expect(";");
     } else if(consume("{")) {
         node = calloc(1, sizeof(Node));
