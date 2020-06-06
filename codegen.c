@@ -7,13 +7,18 @@ int labelnum;
 
 void gen_lval(Node *node)
 {
-    if(node->kind != ND_LVAR) {
+    if(node->kind == ND_LVAR) {
+        printf("  mov rax, rbp\n");
+        printf("  sub rax, %d\n", node->offset);
+        printf("  push rax\n");
+    } else if(node->kind == ND_DEREF) {
+        gen(node->lhs);
+        //printf("  mov rax, rbp\n");
+        //printf("  sub rax, %d\n", node->offset);
+        printf("  push rax\n");
+    } else {
         error("代入の左辺値が変数ではありません");
     }
-
-    printf("  mov rax, rbp\n");
-    printf("  sub rax, %d\n", node->offset);
-    printf("  push rax\n");
 }
 
 void gen_args(Node *node, int argnum)
@@ -225,6 +230,7 @@ void gen(Node *node)
             gen_lval(node->lhs);
             return;
         case ND_DEREF:
+            //fprintf(stderr, "DEREF : %d %s\n", node->lhs->kind, node->lhs->name);
             gen(node->lhs);
             printf("  pop rax\n");
             printf("  mov rax, [rax]\n");

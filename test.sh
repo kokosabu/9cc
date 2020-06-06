@@ -123,6 +123,8 @@ assert 5 "int main(){return bar(0,1,2,3,4,5);} int bar(int a,int b,int c,int d,i
 
 assert 3 "int main(){int x; int *y; x = 3; y = &x; return *y;}"
 assert 3 "int main(){int x; int y; int *z; x = 3; y = 5; z = &y + 8; return *z;}"
+assert 3 "int main(){int x; int *y; y = &x; *y = 3; return x;}"
+assert 5 "int main(){int x; int *y; int **z; y = &x; z = &y; **z = 5; return x;}"
 
 # ./9cc "int main(){int x; y = 3;}" # errorになる
 # ./9cc "main(){int x; x = 3;}" # errorになる
