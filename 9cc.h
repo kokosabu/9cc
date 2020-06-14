@@ -91,6 +91,7 @@ struct Node {
     Node *rhs;     // 右辺
     int val;       // kindがND_NUMの場合のみ使う
     int offset;    // kindがND_LVARの場合のみ使う
+    Type type;     // kindがND_LVARの場合のみ使う
     char *name;    // kindが
 };
 

@@ -4,7 +4,7 @@ assert() {
     input="$2"
 
     ./9cc "$input" > tmp.s
-    cc -o tmp tmp.s
+    cc -o tmp tmp.s lib.c
     ./tmp
     actual="$?"
 
@@ -58,50 +58,18 @@ assert  8 "int main() { int a; for(3;a<7;a = a + 2) 3; a; }"
 assert  3 "int main() { int a; { a = 0; a = a + 1; a = a * 3; } }"
 assert  8 "int main() { int a; int b; a=0; b=1; while(a<3) {a = a + 1; b = 2 * b;} b; }"
 
-./9cc "int main(){foo0();}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
+assert 0 "int main(){foo0(); return 0;}"
+assert 0 "int main(){foo1(1); return 0;}"
+assert 0 "int main(){foo2(1,2); return 0;}"
+assert 0 "int main(){foo3(1,2,3); return 0;}"
+assert 0 "int main(){foo4(1,2,3,4); return 0;}"
+assert 0 "int main(){foo5(1,2,3,4,5); return 0;}"
+assert 0 "int main(){foo6(1,2,3,4,5,6); return 0;}"
+assert 0 "int main(){foo7(1,2,3,4,5,6,7); return 0;}"
+assert 0 "int main(){foo8(1,2,3,4,5,6,7,8); return 0;}"
+assert 0 "int main(){foo9(1,2,3,4,5,6,7,8,9); return 0;}"
 
-./9cc "int main(){foo1(1);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo2(1,2);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo3(1,2,3);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo4(1,2,3,4);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo5(1,2,3,4,5);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo6(1,2,3,4,5,6);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo7(1,2,3,4,5,6,7);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo8(1,2,3,4,5,6,7,8);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-./9cc "int main(){foo9(1,2,3,4,5,6,7,8,9);}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
-
-
-./9cc "int main(){bar();} int bar(){foo0();}" > tmp.s
-cc -o tmp tmp.s lib.c
-./tmp
+assert 0 "int main(){bar();} int bar(){foo0(); return 0;}"
 
 assert 7 "int main(){int a; a = bar(); a;} int bar(){return 3+4;}"
 assert 7 "int main(){return bar();} int bar(){return foo();} int foo(){return 7;}"
@@ -125,6 +93,10 @@ assert 3 "int main(){int x; int *y; x = 3; y = &x; return *y;}"
 assert 3 "int main(){int x; int y; int *z; x = 3; y = 5; z = &y + 8; return *z;}"
 assert 3 "int main(){int x; int *y; y = &x; *y = 3; return x;}"
 assert 5 "int main(){int x; int *y; int **z; y = &x; z = &y; **z = 5; return x;}"
+
+assert 4 "int main(){int *p; alloc4(&p, 1, 2, 4, 8); int *q; q = p + 2; *q;}"
+assert 8 "int main(){int *p; alloc4(&p, 1, 2, 4, 8); int *q; q = p + 2; *q; q = p + 3; return *q;}"
+assert 2 "int main(){int *p; alloc4(&p, 1, 2, 4, 8); int *q; q = p + 3; q = q - 2; return *q;}"
 
 # ./9cc "int main(){int x; y = 3;}" # errorになる
 # ./9cc "main(){int x; x = 3;}" # errorになる

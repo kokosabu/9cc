@@ -240,7 +240,7 @@ Node *new_node_arg(Token *tok, int p_num)
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
         t = &(lvar->type);
-        for(int i = p_num; i >= 0; i--) {
+        for(int i = p_num; i > 0; i--) {
             t->ty = PTR;
             t->ptr_to = calloc(1, sizeof(Type));
             t = t->ptr_to;
@@ -261,6 +261,7 @@ Node *new_node_ident(Token *tok)
     LVar *lvar = find_lvar(tok);
     if(lvar) {
         node->offset = lvar->offset;
+        node->type   = lvar->type;
     } else {
         error("未定義の変数です。");
     }
@@ -276,6 +277,7 @@ Node *new_node_ident_decl(Token *tok, int p_num)
     LVar *lvar = find_lvar(tok);
     if(lvar) {
         node->offset = lvar->offset;
+        node->type   = lvar->type;
     } else {
         lvar = calloc(1, sizeof(LVar));
         lvar->next = locals;
@@ -283,7 +285,7 @@ Node *new_node_ident_decl(Token *tok, int p_num)
         lvar->len = tok->len;
         lvar->offset = locals->offset + 8;
         t = &(lvar->type);
-        for(int i = p_num; i >= 0; i--) {
+        for(int i = p_num; i > 0; i--) {
             t->ty = PTR;
             t->ptr_to = calloc(1, sizeof(Type));
             t = t->ptr_to;
@@ -291,6 +293,7 @@ Node *new_node_ident_decl(Token *tok, int p_num)
         t->ty = INT;
         //lvar->offset = (lvar->name[0] - 'a' + 1) * 8;
         node->offset = lvar->offset;
+        node->type   = lvar->type;
         locals = lvar;
     }
     return node;
@@ -406,9 +409,31 @@ Node *add()
 
     for(;;) {
         if(consume("+")) {
-            node = new_node(ND_ADD, node, mul());
+            Node *adder;
+            if(node->kind == ND_LVAR && (node->type).ty == PTR) {
+                if((node->type).ptr_to->ty == INT) {
+                    adder = new_node(ND_MUL, mul(), new_node_num(4));
+                } else {
+                    adder = new_node(ND_MUL, mul(), new_node_num(8));
+                }
+            } else {
+                adder = mul();
+            }
+
+            node = new_node(ND_ADD, node, adder);
         } else if(consume("-")) {
-            node = new_node(ND_SUB, node, mul());
+            Node *suber;
+            if(node->kind == ND_LVAR && (node->type).ty == PTR) {
+                if((node->type).ptr_to->ty == INT) {
+                    suber = new_node(ND_MUL, mul(), new_node_num(4));
+                } else {
+                    suber = new_node(ND_MUL, mul(), new_node_num(8));
+                }
+            } else {
+                suber = mul();
+            }
+
+            node = new_node(ND_SUB, node, suber);
         } else {
             return node;
         }
